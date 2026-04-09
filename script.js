@@ -42,6 +42,7 @@ let score      = 0;        // 현재 점수
 let lives      = 3;        // 남은 목숨 (0이 되면 게임 오버)
 let combo      = 0;        // 연속으로 과일을 벤 횟수 (3 이상이면 콤보 배수 점수)
 let comboTimer = null;     // 콤보 초기화 타이머 ID (일정 시간 안에 못 베면 combo = 0)
+let gameStartTime = 0;     // 게임 시작 시각 (ms)
 
 let fruits      = [];      // 현재 화면에 존재하는 Fruit 객체 배열
 let particles   = [];      // 과일을 벨 때 튀는 파티클 객체 배열
@@ -130,6 +131,12 @@ class Fruit {
     this.half2    = null; //반쪽난 뒤 한쪽 저장
     this.sliceAngle = 0; //베인 각도
     this.fontSize = this.r * 1.6; //이모지 크기 
+
+    const elapsed = (Date.now() - gameStartTime) / 1000; // 경과 시간 (초)
+    const level   = Math.floor(elapsed / 20);             // 20초마다 레벨 업
+
+    this.vy       = (1.2 + Math.random() * 2.5) + level * 0.3;  // 초기 낙하 속도 증가
+    this.gravity  = 0.035 + level * 0.008;                       // 중력 가속도 증가
   }
 
 
@@ -148,8 +155,6 @@ class Fruit {
     ctx.translate(this.x, this.y); //위치 이동
     ctx.rotate(this.rotation);
     ctx.globalAlpha  = this.alpha;
-    ctx.shadowColor  = this.color; //glow 효과
-    ctx.shadowBlur   = 20;
     ctx.font         = `${this.fontSize}px serif`;
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
@@ -163,7 +168,7 @@ class Fruit {
     this.sliceAngle = angle; //슬라이스 각도
     this.half1 = new FruitHalf(this,  1); //조각 생성
     this.half2 = new FruitHalf(this, -1); // 조각 생성
-    spawnParticles(this.x, this.y, this.color, this.emoji, 10);//파티클 생성
+    spawnParticles(this.x, this.y, this.color, this.emoji, 6);//파티클 생성
   }
 
   isHit(px, py) {
@@ -194,7 +199,7 @@ class FruitHalf {
     this.vy       = Math.sin(perpAngle) * dir * 3 + parent.vy;
     this.rotSpeed = dir * 0.08;
     this.alpha    = 1;
-    this.fadeRate = 0.025;
+    this.fadeRate = 0.04;
   }
 
   update() {
@@ -215,7 +220,7 @@ class FruitHalf {
 
     ctx.beginPath();
     ctx.arc(0, 0, this.r * 1.2, 0, Math.PI * 2);
-    ctx.clip();
+
 
     ctx.beginPath();
     ctx.arc(this.dir * this.r * 0.2, 0, this.r, 0, Math.PI * 2);
@@ -247,7 +252,7 @@ class Particle {
     this.vy       = Math.sin(angle) * speed - 2;
     this.alpha    = 1;
     this.r        = 3 + Math.random() * 4;
-    this.useEmoji = Math.random() < 0.3;
+    this.useEmoji = Math.random() < 0.1;
     this.fontSize = 14 + Math.random() * 10;
   }
 
@@ -271,8 +276,6 @@ class Particle {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
       ctx.fillStyle    = this.color;
-      ctx.shadowColor  = this.color;
-      ctx.shadowBlur   = 8;
       ctx.fill();
     }
     ctx.restore();
@@ -318,8 +321,7 @@ class ScorePopup {
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle    = this.color;
-    ctx.shadowColor  = this.color;
-    ctx.shadowBlur   = 15;
+
     ctx.fillText(this.text, this.x, this.y);
     ctx.restore();
   }
@@ -332,7 +334,10 @@ class ScorePopup {
 // ═══════════════════════════════════════════════════════════
 
 function spawnParticles(x, y, color, emoji, count) {
-  for (let i = 0; i < count; i++) {
+  const MAX_PARTICLES = 80;
+  const available = MAX_PARTICLES - particles.length;
+  const actual = Math.min(count, available);
+  for (let i = 0; i < actual; i++) {
     particles.push(new Particle(x, y, color, emoji));
   }
 }
@@ -382,7 +387,7 @@ function checkSlice() {
     if (f.isBomb) {
       loseLife();
       f.sliced = true;
-      spawnParticles(f.x, f.y, '#ff4444', '💥', 15);
+      spawnParticles(f.x, f.y, '#ff4444', '💥', 8);
       scorePopups.push(new ScorePopup(f.x, f.y - 20, '💥 BOMB!', '#ff4444'));
       shakeScreen();
     } else {
@@ -396,7 +401,7 @@ function checkSlice() {
 
       const pts      = f.points * (combo >= 3 ? combo : 1);
       score         += pts;
-      document.getElementById('scoreValue').textContent = score;
+    
 
       const popText  = combo >= 3 ? `${combo}x COMBO! +${pts}` : `+${pts}`;
       const popColor = combo >= 3 ? '#ff6b35' : '#ffe066';
@@ -418,7 +423,7 @@ function handleMissed() {
     if (!f.sliced && f.isOffScreen()) {
       if (!f.isBomb) { //폭탄 아님
         loseLife(); //생명 떨어짐
-        spawnParticles(f.x, Math.min(f.y, H - 20), '#aaa', '💨', 5); //파티클 효과
+        spawnParticles(f.x, Math.min(f.y, H - 20), '#aaa', '💨', 3); //파티클 효과
       }
       fruits.splice(i, 1); //배열에서 제거
     }
@@ -431,7 +436,7 @@ function startGame() {
   fruits = []; particles = []; sliceTrail = [];
   halfFruits = []; scorePopups = [];
 
-
+  gameStartTime = Date.now();
 
   // 2. HUD UI 업데이트 (점수 0으로, 하트 3개로)
   document.getElementById('scoreValue').textContent = 0;
@@ -474,24 +479,39 @@ function gameOver() {
 //  렌더링
 // ═══════════════════════════════════════════════════════════
 
-function drawTrail() {
-  for (let i = 1; i < sliceTrail.length; i++) {
-    const p0 = sliceTrail[i - 1], p1 = sliceTrail[i]; 
-    const t  = i / sliceTrail.length;
-    ctx.beginPath();
+// function drawTrail() {
+//   for (let i = 1; i < sliceTrail.length; i++) {
+//     const p0 = sliceTrail[i - 1], p1 = sliceTrail[i]; 
+//     const t  = i / sliceTrail.length;
+//     ctx.beginPath();
 
-    //이전점, 현재점 두점을 이어서 선으로 보이게 함
-    ctx.moveTo(p0.x, p0.y);
-    ctx.lineTo(p1.x, p1.y);
-    ctx.strokeStyle = `hsla(${200 + t * 60}, 100%, 80%, ${p1.alpha * 0.9})`;
-    ctx.lineWidth   = (1 - t) * 4 + 1;
-    ctx.lineCap     = 'round';
-    ctx.shadowColor = 'rgba(150,220,255,0.8)';
-    ctx.shadowBlur  = 10;
-    ctx.stroke();
-    ctx.shadowBlur  = 0;
+//     //이전점, 현재점 두점을 이어서 선으로 보이게 함
+//     ctx.moveTo(p0.x, p0.y);
+//     ctx.lineTo(p1.x, p1.y);
+//     ctx.strokeStyle = `hsla(${200 + t * 60}, 100%, 80%, ${p1.alpha * 0.9})`;
+//     ctx.lineWidth   = (1 - t) * 4 + 1;
+//     ctx.lineCap     = 'round';
+
+//     ctx.stroke();
+
+//   }
+// }
+
+function drawTrail() {
+  if (sliceTrail.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(sliceTrail[0].x, sliceTrail[0].y);
+  for (let i = 1; i < sliceTrail.length; i++) {
+    ctx.lineTo(sliceTrail[i].x, sliceTrail[i].y); //점들을 선들로 연결
   }
+  ctx.strokeStyle = 'rgba(180, 230, 255, 0.6)';
+  ctx.lineWidth   = 2;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  ctx.stroke(); //한번에 그리기
 }
+
+
 
 // 마우스 커서 그리기, 이펙트 효과 
 function drawCursor() {
@@ -536,6 +556,8 @@ function gameLoop() {
   ctx.fillStyle = bgGradient;
   ctx.fillRect(0, 0, W, H); // 캔버스 전체를 배경색으로 덮어서 이전 프레임 지우기
 
+  document.getElementById('scoreValue').textContent = score;
+
   // 격자 패턴 (오프스크린에서 복사)
   ctx.drawImage(gridCanvas, 0, 0);
   
@@ -543,13 +565,16 @@ function gameLoop() {
   sliceTrail.forEach(p => { p.alpha -= 0.06; });
   if (gameState === 'playing' && mouseSpeed > 3) { 
     //어느정도 움직임이 있을 때만 trail 표시
-    sliceTrail.push(new TrailPoint(mouseX, mouseY));
+    if (sliceTrail.length < 30) sliceTrail.push(new TrailPoint(mouseX, mouseY));
   }
   while (sliceTrail.length > 0 && sliceTrail[0].alpha <= 0) sliceTrail.shift(); //제일 오래된 마우스 포인트(칸) 삭제
   drawTrail();
 
   // 과일. 생성되면 그리는 용도
   fruits.forEach(f => { f.update(); f.draw(); });
+
+  // 반쪽 조각 — 최대 20개 초과 시 오래된 것부터 제거
+  if (halfFruits.length > 20) halfFruits.splice(0, halfFruits.length - 20);
 
   // 반쪽 조각
   for (let i = halfFruits.length - 1; i >= 0; i--) {
