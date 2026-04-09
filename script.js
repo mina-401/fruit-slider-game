@@ -444,29 +444,27 @@ function handleMissed() {
 }
 
 function startGame() {
-  // 1. 모든 상태 변수를 초기값으로 리셋
-  score  = 0; lives = 3; combo = 0;
+  score  = 0; lives = 3; combo = 0; prevScore = -1;
   fruits = []; particles = []; sliceTrail = [];
   halfFruits = []; scorePopups = [];
 
   gameStartTime = Date.now();
 
-  // 2. HUD UI 업데이트 (점수 0으로, 하트 3개로)
   document.getElementById('scoreValue').textContent = 0;
   updateLivesUI();
 
-  // 3. 시작/게임오버 오버레이 숨김
+  // 오버레이 내용 초기 상태로 복구
+  document.getElementById('overlayEmoji').textContent        = '🍉 🍊 🍋 🍇 🍑';
+  document.getElementById('overlayTitle').textContent        = 'Fruit Slicer'; // h1 id 필요
+  document.getElementById('overlayScoreLabel').style.display = 'none';
+  document.getElementById('overlayScore').style.display      = 'none';
+  document.getElementById('startBtn').textContent            = '게임 시작';
+
   document.getElementById('overlay').classList.add('hidden');
 
-  // 4. 게임 상태 전환
   gameState = 'playing';
-
-  // 5. 이전에 혹시 남아있던 스폰 타이머 제거 후, 300ms 뒤 첫 과일 등장
   clearTimeout(spawnTimer);
   setTimeout(spawnFruit, 300);
-
-  // 6. 이전 애니메이션 루프가 살아있으면 취소 후 새로 시작
-  //    (루프가 중복 실행되면 게임이 2배속으로 돌아가기 때문)
   if (animId) cancelAnimationFrame(animId);
   gameLoop();
 }
@@ -638,9 +636,9 @@ canvas.addEventListener('touchmove', (e) => {
   checkSlice();
 }, { passive: false });
 
-document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('startBtn').addEventListener('click', () => {
-  canvas.classList.add('hide-cursor'); //기존 브라우저 마우스 없애고 커스텀 마우스 사용
+  canvas.classList.add('hide-cursor');
+  startGame();
 });
 
 

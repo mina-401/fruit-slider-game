@@ -148,7 +148,7 @@ body {
 
 #overlay .score-result {
   font-family: 'Fredoka One', cursive;
-  font-size: 52px;
+  font-size: 30px;
   color: #ffe066;
   text-shadow: 0 0 30px rgba(255,224,102,0.8);
 }
@@ -165,7 +165,7 @@ body {
 /* ─── 시작/재시작 버튼 ─────────────────────────────────── */
 #startBtn {
   font-family: 'Fredoka One', cursive;
-  font-size: 22px;
+  font-size: 15px;
   padding: 14px 48px;
   border: none;
   border-radius: 50px;
@@ -180,7 +180,7 @@ body {
 /* ─── 랭킹 보기 버튼 ─────────────────────────────────── */
 #rankingBtn {
   font-family: 'Fredoka One', cursive;
-  font-size: 22px;
+  font-size: 15px;
   padding: 14px 48px;
   border: none;
   border-radius: 50px;
