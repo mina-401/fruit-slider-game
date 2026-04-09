@@ -85,34 +85,57 @@ function createBg() {
 }
 createBg();
 
+// ─── 격자 오프스크린 캔버스 (1회만 렌더링) ──────────────────
+
+
+function createGridCanvas() {
+  const offscreen = document.createElement('canvas');
+  offscreen.width  = W;
+  offscreen.height = H;
+  const gCtx = offscreen.getContext('2d');
+  gCtx.strokeStyle = 'rgba(255,255,255,0.02)';
+  gCtx.lineWidth   = 1;
+  for (let x = 0; x < W; x += 40) {
+    gCtx.beginPath(); gCtx.moveTo(x, 0); gCtx.lineTo(x, H); gCtx.stroke();
+  }
+  for (let y = 0; y < H; y += 40) {
+    gCtx.beginPath(); gCtx.moveTo(0, y); gCtx.lineTo(W, y); gCtx.stroke();
+  }
+  return offscreen;
+}
+
+const gridCanvas = createGridCanvas();
+
 // ═══════════════════════════════════════════════════════════
 //  클래스 정의
 // ═══════════════════════════════════════════════════════════
 
 class Fruit {
   constructor() {
-    const isBomb = Math.random() < 0.12;
-    const type   = isBomb ? BOMB : FRUIT_TYPES[Math.floor(Math.random() * FRUIT_TYPES.length)];
-    Object.assign(this, type);
-    this.isBomb = !!isBomb;
+    const isBomb = Math.random() < 0.12; //랜덤으로 폭탄 생성
+    const type   = isBomb ? BOMB : FRUIT_TYPES[Math.floor(Math.random() * FRUIT_TYPES.length)]; // 이모지 객체 정하기
+    Object.assign(this, type); //오브젝트에 할당하기
+    this.isBomb = !!isBomb; 
 
-    this.r        = 34 + Math.random() * 10;
-    this.x        = this.r + Math.random() * (W - this.r * 2);
-    this.y        = -this.r - 20;
-    this.vy       = 1.2 + Math.random() * 2.5;
-    this.vx       = (Math.random() - 0.5) * 1.5;
-    this.rotation = 0;
-    this.rotSpeed = (Math.random() - 0.5) * 0.05;
+    this.r        = 34 + Math.random() * 10; //과일 반지름
+    this.x        = this.r + Math.random() * (W - this.r * 2); //랜덤 x 위치
+    this.y        = -this.r - 20; //화면 위쪽에서 시작.
+    this.vy       = 1.2 + Math.random() * 2.5; //아래로 떨어지는 속도
+    this.vx       = (Math.random() - 0.5) * 1.5; //좌우 랜덤 이동
+    this.rotation = 0; //현재 회전 각도 
+    this.rotSpeed = (Math.random() - 0.5) * 0.05; //현재 회전 속도
     this.sliced   = false;
-    this.alpha    = 1;
-    this.half1    = null;
-    this.half2    = null;
-    this.sliceAngle = 0;
-    this.fontSize = this.r * 1.6;
+    this.alpha    = 1; //투명도 
+    this.half1    = null; //반쪽난 뒤 한쪽 저장
+    this.half2    = null; //반쪽난 뒤 한쪽 저장
+    this.sliceAngle = 0; //베인 각도
+    this.fontSize = this.r * 1.6; //이모지 크기 
   }
 
+
+  //좌, 우, 중력이동, 회전
   update() {
-    if (this.sliced) return;
+    if (this.sliced) return; //반쪽 났으면 리턴
     this.x  += this.vx;
     this.y  += this.vy;
     this.vy += 0.035;
@@ -120,12 +143,12 @@ class Fruit {
   }
 
   draw() {
-    if (this.sliced) return;
+    if (this.sliced) return; //반쪽 났으면 리턴
     ctx.save();
-    ctx.translate(this.x, this.y);
+    ctx.translate(this.x, this.y); //위치 이동
     ctx.rotate(this.rotation);
     ctx.globalAlpha  = this.alpha;
-    ctx.shadowColor  = this.color;
+    ctx.shadowColor  = this.color; //glow 효과
     ctx.shadowBlur   = 20;
     ctx.font         = `${this.fontSize}px serif`;
     ctx.textAlign    = 'center';
@@ -135,12 +158,12 @@ class Fruit {
   }
 
   slice(angle) {
-    if (this.sliced) return;
+    if (this.sliced) return;  //반쪽 났으면 리턴
     this.sliced     = true;
-    this.sliceAngle = angle;
-    this.half1 = new FruitHalf(this,  1);
-    this.half2 = new FruitHalf(this, -1);
-    spawnParticles(this.x, this.y, this.color, this.emoji, 10);
+    this.sliceAngle = angle; //슬라이스 각도
+    this.half1 = new FruitHalf(this,  1); //조각 생성
+    this.half2 = new FruitHalf(this, -1); // 조각 생성
+    spawnParticles(this.x, this.y, this.color, this.emoji, 10);//파티클 생성
   }
 
   isHit(px, py) {
@@ -175,7 +198,8 @@ class FruitHalf {
   }
 
   update() {
-    this.x        += this.vx;
+
+    this.x        += this.vx; 
     this.y        += this.vy;
     this.vy       += 0.08;
     this.rotation += this.rotSpeed;
@@ -362,7 +386,7 @@ function checkSlice() {
       scorePopups.push(new ScorePopup(f.x, f.y - 20, '💥 BOMB!', '#ff4444'));
       shakeScreen();
     } else {
-      const angle = Math.atan2(mouseY - prevMouseY, mouseX - prevMouseX);
+      const angle = Math.atan2(mouseY - prevMouseY, mouseX - prevMouseX); //슬라이스 각도
       f.slice(angle);
       halfFruits.push(f.half1, f.half2);
 
@@ -385,15 +409,18 @@ function checkSlice() {
   }
 }
 
+//화면 아래로 떨어진 과일 검사
 function handleMissed() {
   for (let i = fruits.length - 1; i >= 0; i--) {
     const f = fruits[i];
+
+    //베지못한 과일
     if (!f.sliced && f.isOffScreen()) {
-      if (!f.isBomb) {
-        loseLife();
-        spawnParticles(f.x, Math.min(f.y, H - 20), '#aaa', '💨', 5);
+      if (!f.isBomb) { //폭탄 아님
+        loseLife(); //생명 떨어짐
+        spawnParticles(f.x, Math.min(f.y, H - 20), '#aaa', '💨', 5); //파티클 효과
       }
-      fruits.splice(i, 1);
+      fruits.splice(i, 1); //배열에서 제거
     }
   }
 }
@@ -403,6 +430,8 @@ function startGame() {
   score  = 0; lives = 3; combo = 0;
   fruits = []; particles = []; sliceTrail = [];
   halfFruits = []; scorePopups = [];
+
+
 
   // 2. HUD UI 업데이트 (점수 0으로, 하트 3개로)
   document.getElementById('scoreValue').textContent = 0;
@@ -435,6 +464,7 @@ function gameOver() {
     <div class="score-label">최종 점수</div>
     <div class="score-result">${score}</div>
     <button id="startBtn">다시 시작</button>
+    
   `;
   overlay.classList.remove('hidden');
   document.getElementById('startBtn').addEventListener('click', startGame);
@@ -463,10 +493,11 @@ function drawTrail() {
   }
 }
 
+// 마우스 커서 그리기, 이펙트 효과 
 function drawCursor() {
   const speed = Math.min(mouseSpeed / 30, 1);
-  ctx.save();
-  ctx.translate(mouseX, mouseY);
+  ctx.save(); // 캔버스 상태 저장
+  ctx.translate(mouseX, mouseY);//좌표계 마우스 위치로 이동해서 마우스 위치를 (0,0) 으로 변경
 
   ctx.beginPath();
   ctx.arc(0, 0, 10 + speed * 4, 0, Math.PI * 2);
@@ -477,15 +508,14 @@ function drawCursor() {
   ctx.beginPath();
   ctx.arc(0, 0, 3, 0, Math.PI * 2);
   ctx.fillStyle   = `rgba(255,255,255,${0.7 + speed * 0.3})`;
-  ctx.shadowColor = 'white';
+  ctx.shadowColor = 'white'; //Glow 효과
   ctx.shadowBlur  = 10;
   ctx.fill();
 
-  ctx.restore();
+  ctx.restore(); //translate, shadow 설정 제거. 캔버스 상태 복구
 }
 
 //game loop
-
 
 function gameLoop() {
   ctx.save(); //현재 캔버스 설정 (좌표, 색상) 설정
@@ -506,16 +536,9 @@ function gameLoop() {
   ctx.fillStyle = bgGradient;
   ctx.fillRect(0, 0, W, H); // 캔버스 전체를 배경색으로 덮어서 이전 프레임 지우기
 
-  // 격자 패턴
-  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-  ctx.lineWidth   = 1;
-  for (let x = 0; x < W; x += 40) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-  }
-  for (let y = 0; y < H; y += 40) {
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-  }
-
+  // 격자 패턴 (오프스크린에서 복사)
+  ctx.drawImage(gridCanvas, 0, 0);
+  
   // 궤적 업데이트 & 그리기
   sliceTrail.forEach(p => { p.alpha -= 0.06; });
   if (gameState === 'playing' && mouseSpeed > 3) { 
@@ -525,7 +548,7 @@ function gameLoop() {
   while (sliceTrail.length > 0 && sliceTrail[0].alpha <= 0) sliceTrail.shift(); //제일 오래된 마우스 포인트(칸) 삭제
   drawTrail();
 
-  // 과일
+  // 과일. 생성되면 그리는 용도
   fruits.forEach(f => { f.update(); f.draw(); });
 
   // 반쪽 조각
@@ -550,6 +573,7 @@ function gameLoop() {
   }
 
   drawCursor();
+
   ctx.restore(); //save 시점으로 되돌림 
 
   if (gameState === 'playing') handleMissed();
@@ -561,18 +585,19 @@ function gameLoop() {
 //  이벤트 리스너
 // ═══════════════════════════════════════════════════════════
 
+//플레이어 칼질 시 호출
 canvas.addEventListener('mousemove', (e) => {
-  const rect   = canvas.getBoundingClientRect();
-  const scaleX = W / rect.width;
+  const rect   = canvas.getBoundingClientRect(); //브라우저 화면에서 실제 크기 가져옴
+  const scaleX = W / rect.width; //좌표 변환
   const scaleY = H / rect.height;
-  prevMouseX = mouseX;
+  prevMouseX = mouseX; //이전 마우스 포인트 저장
   prevMouseY = mouseY;
-  mouseX = (e.clientX - rect.left) * scaleX;
+  mouseX = (e.clientX - rect.left) * scaleX; // 마우스 좌표 계산
   mouseY = (e.clientY - rect.top)  * scaleY;
 
-  const dx = mouseX - prevMouseX, dy = mouseY - prevMouseY;
-  mouseSpeed = Math.sqrt(dx * dx + dy * dy);
-  checkSlice();
+  const dx = mouseX - prevMouseX, dy = mouseY - prevMouseY; //움직임 차이
+  mouseSpeed = Math.sqrt(dx * dx + dy * dy); //마우스가 이전위치에서 현재 위치로 실제로 얼마나 이동했는가? 한프레임동안 움직인 속도로 이용
+  checkSlice(); //마우스 지나간 경로에 과일 있으면 자른다
 });
 
 canvas.addEventListener('touchmove', (e) => {
@@ -580,7 +605,7 @@ canvas.addEventListener('touchmove', (e) => {
   const rect   = canvas.getBoundingClientRect();
   const scaleX = W / rect.width;
   const scaleY = H / rect.height;
-  const t      = e.touches[0];
+  const t      = e.touches[0]; //첫번째 손가락
   prevMouseX = mouseX;
   prevMouseY = mouseY;
   mouseX = (t.clientX - rect.left) * scaleX;
@@ -592,6 +617,11 @@ canvas.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('startBtn').addEventListener('click', () => {
+  canvas.classList.add('hide-cursor'); //기존 브라우저 마우스 없애고 커스텀 마우스 사용
+});
+
+
 
 // ─── 초기 루프 (idle 상태 배경 애니메이션) ──────────────────
 gameLoop();
