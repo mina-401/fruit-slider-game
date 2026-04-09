@@ -39,6 +39,7 @@ const H = canvas.height;
 // ─── 상태 변수 ───────────────────────────────────────────────
 let gameState  = 'idle';   // 현재 게임 상태 ('idle': 시작 전 | 'playing': 게임 중 | 'over': 게임 오버)
 let score      = 0;        // 현재 점수
+let prevScore = -1;
 let lives      = 3;        // 남은 목숨 (0이 되면 게임 오버)
 let combo      = 0;        // 연속으로 과일을 벤 횟수 (3 이상이면 콤보 배수 점수)
 let comboTimer = null;     // 콤보 초기화 타이머 ID (일정 시간 안에 못 베면 combo = 0)
@@ -145,7 +146,7 @@ class Fruit {
     if (this.sliced) return; //반쪽 났으면 리턴
     this.x  += this.vx;
     this.y  += this.vy;
-    this.vy += 0.035;
+    this.vy += this.gravity;
     this.rotation += this.rotSpeed;
   }
 
@@ -365,6 +366,8 @@ function showCombo(n) {
 //주기적으로 과일 생성하기
 function spawnFruit() {
 
+  if (gameState !== 'playing') return;
+
   const elapsed = (Date.now() - gameStartTime) / 1000;
   const level   = Math.floor(elapsed / 20);
 
@@ -472,40 +475,19 @@ function gameOver() {
   gameState = 'over';
   clearTimeout(spawnTimer);
 
-  const overlay = document.getElementById('overlay');
-  overlay.innerHTML = `
-    <div class="fruit-preview">💀</div>
-    <h1>Game Over</h1>
-    <div class="score-label">최종 점수</div>
-    <div class="score-result">${score}</div>
-    <button id="startBtn">다시 시작</button>
-    
-  `;
-  overlay.classList.remove('hidden');
-  document.getElementById('startBtn').addEventListener('click', startGame);
-}
+  document.getElementById('overlayEmoji').textContent      = '💀';
+  document.getElementById('overlayTitle').textContent      = 'Game Over';
+  document.getElementById('overlayScoreLabel').style.display = 'block';
+  document.getElementById('overlayScore').style.display      = 'block';
+  document.getElementById('overlayScore').textContent        = score;
+  document.getElementById('startBtn').textContent            = '다시 시작';
 
+  document.getElementById('overlay').classList.remove('hidden');
+}
 // ═══════════════════════════════════════════════════════════
 //  렌더링
 // ═══════════════════════════════════════════════════════════
 
-// function drawTrail() {
-//   for (let i = 1; i < sliceTrail.length; i++) {
-//     const p0 = sliceTrail[i - 1], p1 = sliceTrail[i]; 
-//     const t  = i / sliceTrail.length;
-//     ctx.beginPath();
-
-//     //이전점, 현재점 두점을 이어서 선으로 보이게 함
-//     ctx.moveTo(p0.x, p0.y);
-//     ctx.lineTo(p1.x, p1.y);
-//     ctx.strokeStyle = `hsla(${200 + t * 60}, 100%, 80%, ${p1.alpha * 0.9})`;
-//     ctx.lineWidth   = (1 - t) * 4 + 1;
-//     ctx.lineCap     = 'round';
-
-//     ctx.stroke();
-
-//   }
-// }
 
 function drawTrail() {
   if (sliceTrail.length < 2) return;
@@ -566,7 +548,12 @@ function gameLoop() {
   ctx.fillStyle = bgGradient;
   ctx.fillRect(0, 0, W, H); // 캔버스 전체를 배경색으로 덮어서 이전 프레임 지우기
 
-  document.getElementById('scoreValue').textContent = score;
+
+  //스코어 변경시에 스코어 바꾸기
+  if (score !== prevScore) {
+   document.getElementById('scoreValue').textContent = score;
+    prevScore = score;
+  }
 
   // 격자 패턴 (오프스크린에서 복사)
   ctx.drawImage(gridCanvas, 0, 0);
