@@ -133,7 +133,7 @@ class Fruit {
     this.fontSize = this.r * 1.6; //이모지 크기 
 
     const elapsed = (Date.now() - gameStartTime) / 1000; // 경과 시간 (초)
-    const level   = Math.floor(elapsed / 20);             // 20초마다 레벨 업
+    const level   = Math.floor(elapsed / 15);             // 20초마다 레벨 업
 
     this.vy       = (1.2 + Math.random() * 2.5) + level * 0.3;  // 초기 낙하 속도 증가
     this.gravity  = 0.035 + level * 0.008;                       // 중력 가속도 증가
@@ -364,10 +364,20 @@ function showCombo(n) {
 
 //주기적으로 과일 생성하기
 function spawnFruit() {
-  if (gameState !== 'playing') return;
-  fruits.push(new Fruit());
+
+  const elapsed = (Date.now() - gameStartTime) / 1000;
+  const level   = Math.floor(elapsed / 20);
+
+  // 레벨마다 스폰 개수 증가 (1 → 2 → 3 → ...)
+  const count = Math.min(1 + level, 5); // 최대 5개 동시 스폰
+  for (let i = 0; i < count; i++) {
+    fruits.push(new Fruit());
+  }
+
+  // 스폰 간격도 점점 짧아짐
   const delay = Math.max(600, 1500 - score * 8);
   spawnTimer = setTimeout(spawnFruit, delay);
+
 }
 
 
