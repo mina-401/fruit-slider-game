@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🍉 Fruit Slicer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="wrapper">
+  <div id="hud">
+    <div id="score-box">🏆 <span id="scoreValue">0</span></div>
+    <div id="title-box">FRUIT SLICER</div>
+    <div id="lives-box">
+      <span class="life-icon" id="life0">❤️</span>
+      <span class="life-icon" id="life1">❤️</span>
+      <span class="life-icon" id="life2">❤️</span>
+    </div>
+  </div>
+
+  <div style="position:relative;">
+    <canvas id="gameCanvas" width="680" height="500"></canvas>
+    <div id="overlay">
+      <div class="fruit-preview">🍉 🍊 🍋 🍇 🍑</div>
+      <h1>Fruit Slicer</h1>
+      <p>마우스를 빠르게 휘둘러 과일을 베세요!<br>폭탄💣은 피하세요!</p>
+      <button id="startBtn">게임 시작</button>
+    </div>
+    <div id="combo-display"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

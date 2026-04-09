@@ -1,0 +1,202 @@
+/* ─── Reset & Base ─────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a0a2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  overflow: hidden;
+  cursor: none;
+}
+
+/* ─── 배경 캔버스 ──────────────────────────────────────── */
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── 레이아웃 래퍼 ────────────────────────────────────── */
+#wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ─── HUD ──────────────────────────────────────────────── */
+#hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 680px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+}
+
+#score-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 28px;
+  color: #ffe066;
+  text-shadow: 0 0 20px rgba(255,224,102,0.6);
+}
+
+#lives-box {
+  display: flex;
+  gap: 6px;
+  font-size: 26px;
+}
+
+.life-icon {
+  display: inline-block;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.life-icon.lost {
+  opacity: 0.2;
+  transform: scale(0.7);
+}
+
+#title-box {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+}
+
+/* ─── 게임 캔버스 ──────────────────────────────────────── */
+#gameCanvas {
+  border-radius: 24px;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow:
+    0 0 60px rgba(120,60,220,0.4),
+    0 0 120px rgba(120,60,220,0.2),
+    inset 0 0 60px rgba(0,0,0,0.3);
+  display: block;
+  cursor: none;
+}
+
+/* ─── 오버레이 (시작 / 게임오버) ───────────────────────── */
+#overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 680px;
+  height: 500px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: rgba(15, 5, 30, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+#overlay h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 64px;
+  background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(255,150,50,0.5));
+  animation: titlePulse 2s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(255,150,50,0.5)); }
+  50%       { filter: drop-shadow(0 0 40px rgba(255,150,50,0.9)); }
+}
+
+#overlay p {
+  font-size: 18px;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  line-height: 1.6;
+}
+
+#overlay .fruit-preview {
+  font-size: 48px;
+  animation: sway 4s ease-in-out infinite;
+  display: flex;
+  gap: 16px;
+}
+
+@keyframes sway {
+  0%   { transform: rotate(-5deg); }
+  50%  { transform: rotate(5deg);  }
+  100% { transform: rotate(-5deg); }
+}
+
+#overlay .score-result {
+  font-family: 'Fredoka One', cursive;
+  font-size: 52px;
+  color: #ffe066;
+  text-shadow: 0 0 30px rgba(255,224,102,0.8);
+}
+
+#overlay .score-label {
+  font-size: 16px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+#overlay.hidden { display: none; }
+
+/* ─── 시작/재시작 버튼 ─────────────────────────────────── */
+#startBtn {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  padding: 14px 48px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #ff6b35, #f7c59f);
+  color: #1a0a2e;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 0 #c44d1a, 0 8px 20px rgba(255,107,53,0.4);
+  letter-spacing: 1px;
+}
+
+#startBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #c44d1a, 0 12px 30px rgba(255,107,53,0.5);
+}
+
+#startBtn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #c44d1a, 0 4px 10px rgba(255,107,53,0.3);
+}
+
+/* ─── 콤보 표시 ────────────────────────────────────────── */
+#combo-display {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Fredoka One', cursive;
+  font-size: 36px;
+  color: #ff6b35;
+  text-shadow: 0 0 20px rgba(255,107,53,0.8);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
