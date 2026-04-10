@@ -13,6 +13,7 @@ import {
   showGameOverOverlay, hideOverlay, updateScoreUI,
 } from './ui.js';
 import { gameLoop } from './render.js';
+import { saveScore } from './leaderboard.js';
 
 // ─── 파티클 스폰 ─────────────────────────────────────────────
 export function spawnParticles(x, y, color, count) {
@@ -160,4 +161,5 @@ export function gameOver() {
   state.gameState = 'over';
   clearTimeout(state.spawnTimer);
   showGameOverOverlay(state.score);
+  showNicknameInput(state.score);     // 닉네임 입력창 표시
 }

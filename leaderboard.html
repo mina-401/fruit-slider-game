@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏆 Fruit Slicer — 리더보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="container">
+  <a href="index.html" class="back-btn">← 게임으로</a>
+
+  <div class="header">
+    <h1>🏆 리더보드</h1>
+    <p>상위 10명의 기록</p>
+  </div>
+
+  <div class="board-card">
+    <div class="board-header">
+      <span>순위</span>
+      <span>닉네임</span>
+      <span style="text-align:right">점수</span>
+      <span style="text-align:right">날짜</span>
+    </div>
+    <div id="board-body">
+      <div class="state-box">
+        <div class="spinner"></div>
+        불러오는 중...
+      </div>
+    </div>
+  </div>
+
+  <button class="refresh-btn" onclick="loadAndRender()">↻ 새로고침</button>
+</div>
+
+
+<!-- 리더보드 -->
+<script type="module">
+  import { loadScores } from './js/leaderboard.js';
+
+  const MEDALS = ['🥇', '🥈', '🥉'];
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  async function loadAndRender() {
+    const body = document.getElementById('board-body');
+    body.innerHTML = `
+      <div class="state-box">
+        <div class="spinner"></div>불러오는 중...
+      </div>`;
+
+    try {
+      const scores = await loadScores();
+
+      if (scores.length === 0) {
+        body.innerHTML = `<div class="state-box">아직 기록이 없습니다 🍉</div>`;
+        return;
+      }
+
+      body.innerHTML = scores.map((e, i) => `
+        <div class="board-row ${i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : ''}">
+          <span class="rank">${MEDALS[i] ?? `${i + 1}`}</span>
+          <span class="nickname">${escapeHtml(e.nickname)}</span>
+          <span class="score-val">${e.score.toLocaleString()}</span>
+          <span class="date-val">${e.date ?? ''}</span>
+        </div>
+      `).join('');
+
+    } catch (err) {
+      body.innerHTML = `<div class="state-box">불러오기 실패 😢<br><small>${err.message}</small></div>`;
+    }
+  }
+
+  window.loadAndRender = loadAndRender;
+  loadAndRender();
+</script>
+
+</body>
+</html>

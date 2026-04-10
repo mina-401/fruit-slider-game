@@ -45,9 +45,16 @@ canvas.addEventListener('touchmove', (e) => {
 
 document.getElementById('startBtn').addEventListener('click', () => {
   startGame();
+  console.log('start');
   syncPauseBtn();
 });
 
+document.getElementById('rankingBtn')
+  .addEventListener('click', () => {
+    window.location.href = 'leaderboard.html';
+  });
+
+  
 // ─── 개발자용 일시정지 버튼 ──────────────────────────────────
 const pauseBtn = document.getElementById('devPauseBtn');
 if (pauseBtn) {
