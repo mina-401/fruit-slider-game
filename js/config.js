@@ -2,8 +2,8 @@
 //  config.js — 상수 & 데이터
 // ═══════════════════════════════════════════════════════════
 
-export const W = 480;
-export const H = 640;
+export const W = 680;  // 실제 원하는 캔버스 너비
+export const H = 500;  // 실제 원하는 캔버스 높이
 
 export const FRUIT_TYPES = [
   { emoji: '🍉', color: '#ff4d6d', inner: '#c9f0a0', points: 1 },

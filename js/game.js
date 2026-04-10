@@ -30,7 +30,7 @@ export function shakeScreen() { state.shakeAmount = 12; }
 export function spawnFruit() {
   if (state.gameState !== 'playing') return;
 
-  const elapsed = (Date.now() - state.gameStartTime) / 1000;
+  const elapsed = (Date.now() - state.gameStartTime - state.totalPaused) / 1000;
   const level   = Math.floor(elapsed / LEVEL_INTERVAL);
   const count   = Math.min(1 + level, 5);
 
@@ -125,6 +125,8 @@ export function startGame() {
   state.scorePopups = [];
 
   state.gameStartTime = Date.now();
+  state.pausedAt      = 0;
+  state.totalPaused   = 0;
 
   updateScoreUI(0);
   updateLivesUI();
@@ -137,6 +139,20 @@ export function startGame() {
 
   if (state.animId) cancelAnimationFrame(state.animId);
   gameLoop();
+}
+
+// ─── 일시정지 토글 ───────────────────────────────────────────
+export function togglePause() {
+  if (state.gameState === 'playing') {
+    state.gameState = 'paused';
+    state.pausedAt  = Date.now();
+    clearTimeout(state.spawnTimer);
+
+  } else if (state.gameState === 'paused') {
+    state.totalPaused += Date.now() - state.pausedAt;
+    state.gameState    = 'playing';
+    state.spawnTimer   = setTimeout(spawnFruit, 300);
+  }
 }
 
 // ─── 게임 오버 ───────────────────────────────────────────────

@@ -2,12 +2,11 @@
 //  main.js — 진입점 & 이벤트 리스너
 // ═══════════════════════════════════════════════════════════
 
-import { W, H }           from './config.js';
-import { canvas }         from './canvas.js';
-import { state }          from './state.js';
-import { checkSlice }     from './game.js';
-import { startGame }      from './game.js';
-import { gameLoop }       from './render.js';
+import { W, H }                               from './config.js';
+import { canvas }                             from './canvas.js';
+import { state }                              from './state.js';
+import { checkSlice, startGame, togglePause } from './game.js';
+import { gameLoop }                           from './render.js';
 
 // ─── 마우스 좌표 업데이트 공통 로직 ──────────────────────────
 function updatePointer(clientX, clientY) {
@@ -17,14 +16,20 @@ function updatePointer(clientX, clientY) {
 
   state.prevMouseX = state.mouseX;
   state.prevMouseY = state.mouseY;
-  state.mouseX     = (clientX - rect.left) * scaleX;
-  state.mouseY     = (clientY - rect.top)  * scaleY;
+  state.mouseX = (clientX - rect.left) / rect.width * canvas.width
+  state.mouseY = (clientY - rect.top)  / rect.height * canvas.height
 
   const dx = state.mouseX - state.prevMouseX;
   const dy = state.mouseY - state.prevMouseY;
   state.mouseSpeed = Math.sqrt(dx * dx + dy * dy);
 
   checkSlice();
+}
+
+// ─── 일시정지 버튼 텍스트 동기화 ─────────────────────────────
+function syncPauseBtn() {
+  const btn = document.getElementById('devPauseBtn');
+  if (btn) btn.textContent = state.gameState === 'paused' ? '▶ 재개' : '⏸ 일시정지';
 }
 
 // ─── 이벤트 리스너 ───────────────────────────────────────────
@@ -40,6 +45,26 @@ canvas.addEventListener('touchmove', (e) => {
 
 document.getElementById('startBtn').addEventListener('click', () => {
   startGame();
+  syncPauseBtn();
+});
+
+// ─── 개발자용 일시정지 버튼 ──────────────────────────────────
+const pauseBtn = document.getElementById('devPauseBtn');
+if (pauseBtn) {
+  pauseBtn.addEventListener('click', () => {
+    if (state.gameState !== 'playing' && state.gameState !== 'paused') return;
+    togglePause();
+    syncPauseBtn();
+  });
+}
+
+// ─── P 키 단축키 ─────────────────────────────────────────────
+window.addEventListener('keydown', (e) => {
+  if ((e.key === 'p' || e.key === 'P') &&
+      (state.gameState === 'playing' || state.gameState === 'paused')) {
+    togglePause();
+    syncPauseBtn();
+  }
 });
 
 // ─── 초기 루프 (idle 상태 배경 애니메이션) ───────────────────

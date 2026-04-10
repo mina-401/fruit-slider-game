@@ -39,8 +39,7 @@ function drawCursor() {
   ctx.beginPath();
   ctx.arc(0, 0, 3, 0, Math.PI * 2);
   ctx.fillStyle   = `rgba(255,255,255,${0.7 + speed * 0.3})`;
-  ctx.shadowColor = 'white';
-  ctx.shadowBlur  = 10;
+
   ctx.fill();
 
   ctx.restore();
@@ -74,6 +73,32 @@ export function gameLoop() {
 
   // 격자
   ctx.drawImage(gridCanvas, 0, 0);
+
+    // ── 일시정지: 오브젝트 업데이트 없이 현재 프레임만 그림 ──
+  if (state.gameState === 'paused') {
+    state.fruits.forEach(f => f.draw());
+    for (const h of state.halfFruits) h.draw();
+    for (const p of state.particles)  p.draw();
+    drawCursor();
+ 
+    // 반투명 오버레이 + PAUSED 텍스트
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.font         = "bold 48px 'Fredoka One', cursive";
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle    = '#ffe066';
+
+    ctx.fillText('⏸ PAUSED', W / 2, H / 2);
+    ctx.font      = "18px 'Fredoka One', cursive";
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+
+    ctx.fillText('P 키 또는 버튼으로 재개', W / 2, H / 2 + 52);
+ 
+    ctx.restore();
+    return;
+  }
+
 
   // 궤적 업데이트
   state.sliceTrail.forEach(p => { p.alpha -= 0.06; });

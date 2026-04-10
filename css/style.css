@@ -1,6 +1,8 @@
 /* ─── Reset & Base ─────────────────────────────────────── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+
+
 body {
   background: #1a0a2e;
   display: flex;
@@ -85,6 +87,13 @@ body {
 
 /* ─── 게임 캔버스 ──────────────────────────────────────── */
 #gameCanvas {
+
+  width: 680px;
+  height: 500px;
+
+
+
+
   border-radius: 24px;
   border: 2px solid rgba(255,255,255,0.1);
   box-shadow:

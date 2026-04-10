@@ -8,8 +8,7 @@ import { W, H } from './config.js';
 // ─── 배경 별 ────────────────────────────────────────────────
 const bgCanvas     = document.getElementById('bg-canvas');
 const bgCtx        = bgCanvas.getContext('2d');
-bgCanvas.width     = window.innerWidth;
-bgCanvas.height    = window.innerHeight;
+
 
 const stars = Array.from({ length: 120 }, () => ({
   x:     Math.random() * bgCanvas.width,
