@@ -20,23 +20,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-// ─── 점수 저장 ───────────────────────────────────────────────
+// -- 점수 저장 ---- 
 export async function saveScore(nickname, score) {
-  await push(ref(db, 'scores'), {
-    nickname: nickname.trim().slice(0, 12) || '익명',
-    score,
-    date: new Date().toLocaleDateString('ko-KR'),
-    timestamp: Date.now(),
-  });
+  console.log('saveScore 호출됨:', nickname, score);  // 함수 진입 확인
+  
+  try {
+    await push(ref(db, 'scores'), {
+      nickname: nickname.trim().slice(0, 12) || '익명',
+      score,
+      date: new Date().toLocaleDateString('ko-KR'),
+      timestamp: Date.now(),
+    });
+    console.log('Firebase 저장 성공');  // 여기까지 오면 저장 완료
+  } catch (e) {
+    console.error('Firebase 저장 실패:', e);  // 에러 내용 확인
+  }
 }
 
-// ─── 상위 10개 불러오기 ──────────────────────────────────────
 export async function loadScores() {
-  const q      = query(ref(db, 'scores'), orderByChild('score'), limitToLast(5));
-  const snap   = await get(q);
-  if (!snap.exists()) return [];
+  try {
+    const snap = await get(ref(db, 'scores'));
+    if (!snap.exists()) return [];
 
-  const scores = [];
-  snap.forEach(child => scores.push(child.val()));
-  return scores.sort((a, b) => b.score - a.score);
+    // forEach 대신 Object.values 사용
+    const scores = Object.values(snap.val());
+    console.log('불러온 점수:', scores);
+
+    return scores
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+
+  } catch (e) {
+    console.error('Firebase 불러오기 실패:', e);
+    return [];
+  }
 }
