@@ -444,11 +444,18 @@ function handleMissed() {
 }
 
 function startGame() {
-  score  = 0; lives = 3; combo = 0; prevScore = -1;
+  score  = 0; lives = 3; combo = 0; prevScore = -1; mouseSpeed = 0; shakeAmount = 0;
+  
   fruits = []; particles = []; sliceTrail = [];
   halfFruits = []; scorePopups = [];
 
   gameStartTime = Date.now();
+
+  //콤보 타이머 초기화
+  clearTimeout(comboTimer);
+  comboTimer = null;
+  combo = 0;
+
 
   document.getElementById('scoreValue').textContent = 0;
   updateLivesUI();
@@ -464,7 +471,7 @@ function startGame() {
 
   gameState = 'playing';
   clearTimeout(spawnTimer);
-  setTimeout(spawnFruit, 300);
+  spawnTimer = setTimeout(spawnFruit, 300);
   if (animId) cancelAnimationFrame(animId);
   gameLoop();
 }
@@ -481,6 +488,8 @@ function gameOver() {
   document.getElementById('startBtn').textContent            = '다시 시작';
 
   document.getElementById('overlay').classList.remove('hidden');
+
+  canvas.classList.remove('hide-cursor');
 }
 // ═══════════════════════════════════════════════════════════
 //  렌더링
@@ -528,6 +537,10 @@ function drawCursor() {
 //game loop
 
 function gameLoop() {
+
+  animId = requestAnimationFrame(gameLoop);
+
+
   ctx.save(); //현재 캔버스 설정 (좌표, 색상) 설정
 
   // 화면 흔들림
@@ -598,7 +611,8 @@ function gameLoop() {
 
   if (gameState === 'playing') handleMissed();
 
-  animId = requestAnimationFrame(gameLoop);
+
+
 }
 
 // ═══════════════════════════════════════════════════════════
