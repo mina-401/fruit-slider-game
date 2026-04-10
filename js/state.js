@@ -6,6 +6,7 @@
 export const state = {
   // ── 게임 흐름 ──────────────────────────────────────────
   gameState:     'idle',  // 'idle' | 'playing' | 'paused' | 'over'
+  nickname:     '',  
   score:         0,
   prevScore:     -1,
   lives:         3,
@@ -14,6 +15,7 @@ export const state = {
   gameStartTime: 0,
   pausedAt:      0,      // 일시정지 시작 시각 (ms)
   totalPaused:   0,      // 누적 일시정지 시간 (ms) — 난이도 계산 보정용
+ 
 
   // ── 오브젝트 배열 ───────────────────────────────────────
   fruits:      [],

@@ -32,16 +32,26 @@
   <div style="position:relative;">
     <canvas id="gameCanvas" width="680" height="500" ></canvas>
     <div id="overlay">
+      
       <div class="fruit-preview" id="overlayEmoji">🍉 🍊 🍋 🍇 🍑</div>
       <h1 id="overlayTitle">Fruit Slicer</h1>
-      <p>마우스를 빠르게 휘둘러 과일을 베세요!<br>폭탄💣은 피하세요!</p>
+      
+      <p class="guide">마우스를 빠르게 휘둘러 과일을 베세요!<br>폭탄💣은 피하세요!</p>
+
       <div class="score">
         <div class="score-label" id="overlayScoreLabel" style="display:none">최종 점수</div>
         <div class="score-result" id="overlayScore" style="display:none"></div>
       </div>
+      
+      <div class="save">
+         <input id="nicknameInput" maxlength="12" placeholder="닉네임 입력">
+         <button id="saveScoreBtn">저장</button>
+      </div>
      
-      <button id="startBtn">게임 시작</button>
-      <button id="rankingBtn">랭킹 보기</button>
+      <div class ="Btn">
+        <button id="startBtn">게임 시작</button>
+        <button id="rankingBtn">랭킹 보기</button>
+      </div>
     </div>
     <div id="combo-display"></div>
   </div>

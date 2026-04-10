@@ -8,12 +8,13 @@ import {
 } from './config.js';
 import { state }   from './state.js';
 import { Fruit, Particle, ScorePopup } from './classes.js';
+// game.js 상단 ui.js import에 추가 필요
 import {
   updateLivesUI, showCombo,
   showGameOverOverlay, hideOverlay, updateScoreUI,
 } from './ui.js';
 import { gameLoop } from './render.js';
-import { saveScore } from './leaderboard.js';
+
 
 // ─── 파티클 스폰 ─────────────────────────────────────────────
 export function spawnParticles(x, y, color, count) {

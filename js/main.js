@@ -7,6 +7,7 @@ import { canvas }                             from './canvas.js';
 import { state }                              from './state.js';
 import { checkSlice, startGame, togglePause } from './game.js';
 import { gameLoop }                           from './render.js';
+import { saveScore }                          from './leaderboard.js';  
 
 // ─── 마우스 좌표 업데이트 공통 로직 ──────────────────────────
 function updatePointer(clientX, clientY) {
@@ -54,7 +55,27 @@ document.getElementById('rankingBtn')
     window.location.href = 'leaderboard.html';
   });
 
-  
+// ─── 저장 버튼 ───────────────────────────────────────────────
+document.getElementById('saveScoreBtn').addEventListener('click', async () => {
+  const btn      = document.getElementById('saveScoreBtn');
+  const nickname = document.getElementById('nicknameInput').value.trim() || '익명';
+
+  if (btn.dataset.saved) return;
+
+  btn.textContent = '저장 중...';
+  btn.disabled    = true;
+
+  try {
+    await saveScore(nickname, state.score);
+    btn.textContent    = '저장됨';
+    btn.dataset.saved  = 'true';
+  } catch (e) {
+    btn.textContent = '실패';
+    btn.disabled    = false;
+    console.error(e);
+  }
+});
+
 // ─── 개발자용 일시정지 버튼 ──────────────────────────────────
 const pauseBtn = document.getElementById('devPauseBtn');
 if (pauseBtn) {
