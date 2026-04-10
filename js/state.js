@@ -8,6 +8,7 @@ export const state = {
   gameState:     'idle',  // 'idle' | 'playing' | 'paused' | 'over'
   nickname:     '',  
   score:         0,
+  bestScore:     0,
   prevScore:     -1,
   lives:         3,
   combo:         0,

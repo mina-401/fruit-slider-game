@@ -82,6 +82,11 @@ export function checkSlice() {
       const pts      = f.points * (state.combo >= 3 ? state.combo : 1);
       state.score   += pts;
 
+      // 최고점수 갱신
+      if (state.score > state.bestScore) {
+        state.bestScore = state.score;
+      }
+
       const popText  = state.combo >= 3 ? `${state.combo}x COMBO! +${pts}` : `+${pts}`;
       const popColor = state.combo >= 3 ? '#ff6b35' : '#ffe066';
       state.scorePopups.push(new ScorePopup(f.x, f.y - 30, popText, popColor));

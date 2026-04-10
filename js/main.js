@@ -45,8 +45,13 @@ canvas.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 document.getElementById('startBtn').addEventListener('click', () => {
+  const saveBtn = document.getElementById('saveScoreBtn');
+  saveBtn.dataset.saved = '';
+  saveBtn.disabled      = false;
+  saveBtn.textContent   = '저장';
+ 
   startGame();
-  console.log('start');
+ 
   syncPauseBtn();
 });
 

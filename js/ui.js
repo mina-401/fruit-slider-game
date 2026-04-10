@@ -74,6 +74,5 @@ export function hideOverlay() {
 
 // ─── 점수 DOM 업데이트 ───────────────────────────────────────
 export function updateScoreUI(score) {
-  document.getElementById('scoreValue').textContent = score;
+  document.getElementById('scoreValue').textContent = state.bestScore;
 }
-
