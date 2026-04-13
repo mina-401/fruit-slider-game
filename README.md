@@ -5,11 +5,16 @@
 ![Firebase](https://img.shields.io/badge/Firebase-RealtimeDB-blue)
 
 > 마우스로 과일을 슬라이스하는 웹 기반 캐주얼 게임
-> 데모 영상
 
 ![gameplay](./screenshot.gif) <!-- 스크린샷 or GIF 추가 -->
 
----
+## 게임 링크
+
+<p align="left">
+  <a href="https://mina-401.github.io/fruit-slider-game/">
+    <img src="https://img.shields.io/badge/▶️ Play Now-Fruit Slider Game-green?style=for-the-badge&logo=github" />
+  </a>
+</p>
 
 ## 🎮 플레이 방법
 
@@ -22,7 +27,7 @@
 
 ---
 
-## ✨ 게임 특징
+## 게임 특징
 
 - 🍉🍊🍋🍇🍑🍓🥝🍍 8종 과일 + 💣 폭탄
 - 15초마다 난이도 상승 (레벨업 시스템)
@@ -41,24 +46,25 @@
 - Firebase Realtime Database
 
 ---
+'''
 
 ## 📁 파일 구조
-fruit-slider-game/
-├── index.html
-├── leaderboard.html
-├── css/
-│ ├── style.css
-│ └── leaderboard.css
-└── js/
-├── main.js # 진입점 & 이벤트 처리
-├── game.js # 게임 핵심 로직
-├── config.js # 설정값 및 상수
-├── state.js # 전역 상태 관리
-├── classes.js # Fruit, Particle 클래스
-├── render.js # 렌더링 루프
-├── canvas.js # 캔버스 초기화
-├── ui.js # UI 업데이트
-└── leaderboard.js # Firebase 연동
+fruit-slider-game/ <br>
+├── index.html # 메인 게임 화면 <br>
+├── leaderboard.html # 리더보드 화면<br>
+├── css/<br>
+│ &nbsp;&nbsp;&nbsp;&nbsp;├── style.css<br>
+│ &nbsp;&nbsp;&nbsp;&nbsp;└── leaderboard.css<br>
+└── js/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── main.js # 진입점 & 이벤트 처리<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── game.js # 게임 핵심 로직<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── config.js # 설정값 및 상수<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── state.js # 전역 상태 관리<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── classes.js # Fruit, Particle 클래스<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── render.js # 렌더링 루프<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── canvas.js # 캔버스 초기화<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── ui.js # UI 업데이트<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── leaderboard.js # Firebase 연동<br>
 
 ## 주의
 Firebase API 키가 하드코딩되어 있음
