@@ -66,5 +66,9 @@ fruit-slider-game/ <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── leaderboard.js # Firebase 연동<br>
 
 ## 주의
-Firebase API 키가 하드코딩되어 있음
+- Firebase API 키가 클라이언트 코드에 노출되는 구조  
+- Firebase는 클라이언트 API 키 노출을 전제로 설계되어 있어, 보안은 서버 키가 아닌 규칙(Security Rules)과 도메인 제한으로 관리  
+- 해결책:
+  - Firebase Authentication 및 Realtime Database Rules 설정
+  - 승인된 도메인에서만 요청 허용
 
