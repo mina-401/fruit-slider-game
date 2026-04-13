@@ -67,6 +67,24 @@ fruit-slider-game/
      └── leaderboard.js # Firebase 연동
 ```
 
+## 문제 해결
+### 고해상도 디스플레이에서 과일과 커서가 크게 보이는 문제
+
+**원인**  
+디스플레이 `devicePixelRatio`가 2 이상으로, CSS `1px`이 실제 물리 `2px`로 렌더링됨.  
+버퍼 크기를 CSS 크기와 동일하게 설정하면 브라우저가 버퍼를 늘려서 표시하여 모든 게 커 보임.
+
+**해결**  
+버퍼는 `dpr`배로 키우고, CSS 표시 크기는 고정, `ctx.scale(dpr, dpr)`로 좌표계 보정.
+
+```js
+const dpr = window.devicePixelRatio || 1;
+canvas.width        = W * dpr;
+canvas.height       = H * dpr;
+canvas.style.width  = W + 'px';
+canvas.style.height = H + 'px';
+ctx.scale(dpr, dpr);
+```
 
 ## 주의
 - Firebase API 키가 클라이언트 코드에 노출되는 구조  
