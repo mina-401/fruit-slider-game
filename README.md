@@ -46,7 +46,6 @@
 - Firebase Realtime Database
 
 ---
-'''
 
 ## 📁 파일 구조
 fruit-slider-game/ <br>
